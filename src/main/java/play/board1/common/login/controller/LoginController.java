@@ -2,20 +2,17 @@ package play.board1.common.login.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import play.board1.board.entity.Member;
+import play.board1.post.entity.Member;
 import play.board1.common.dto.MemberDto;
 import play.board1.common.dto.SignUpMemberDto;
-import play.board1.common.dto.SignInMemberDto;
 import play.board1.common.login.service.LoginService;
 
 @Controller
-@RequestMapping(value = "/common")
+@RequestMapping(value = "/login")
 @RequiredArgsConstructor
 public class LoginController {
 
@@ -67,6 +64,8 @@ public class LoginController {
         if(null == findMember) return null;
         if(null != findMember && requestMember.pwdCheck(findMember.getPassword())) {
             // TODO DTO 정보 업데이트하기
+            requestMember.setUsername(findMember.getUsername());
+            requestMember.setUserId(findMember.getUserId());
             session.setAttribute("loginMember",requestMember);
 
             return ResponseEntity.ok(requestMember);
@@ -81,6 +80,15 @@ public class LoginController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.removeAttribute("loginMember");
-        return "/index";
+        return "redirect:/";
+    }
+
+    /**
+     * 아이디 중복검사
+     * @return
+     */
+    @GetMapping("/checkId")
+    public ResponseEntity<Boolean> checkId(String userId) {
+        return ResponseEntity.ok(loginService.isExistUserByUserId(userId));
     }
 }

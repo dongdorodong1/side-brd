@@ -11,6 +11,13 @@ public class HelloController {
     public String index(Model model, HttpSession session) {
         session.getAttribute("loginMember");
 
-        return "index";
+        return "/post/postList";
+    }
+
+    @GetMapping("/layout")
+    public String layout(Model model, HttpSession session) {
+        session.getAttribute("loginMember");
+
+        return "layout/content";
     }
 }
